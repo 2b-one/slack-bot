@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser'
 import { config } from 'dotenv'
 import express from 'express'
-import { Api } from './api'
+import { apiController } from './api'
 
 config()
 
@@ -11,5 +11,5 @@ const app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.use('/api', Api)
+app.use('/api', apiController)
 app.listen(port)
