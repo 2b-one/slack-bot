@@ -1,4 +1,6 @@
-# Slowbro
+# Slack bot
+
+Simple bot application to take on some work related routines.
 
 ## Development
 
