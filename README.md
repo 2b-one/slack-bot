@@ -9,7 +9,7 @@ The easiest way to do it is to use [ngrok](https://www.npmjs.com/package/ngrok):
 
 ```
 yarn start
-ngrok 3000
+ngrok http 3000
 ```
 
 Once ngrok is running use the forwarding url in the app.

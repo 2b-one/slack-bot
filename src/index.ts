@@ -15,12 +15,12 @@ app.use(bodyParser.json())
 app.use('/api', apiController)
 
 app.get('/status', (req, res) => {
-  res.status(200).send('OK')
+  res.status(200).send('ok')
 })
 
 app.listen(port)
 
-const statusUrl = process.env.bot_status
+const statusUrl = process.env.bot_status_url
 if (statusUrl) {
   setInterval(() => {
     https.get(statusUrl)

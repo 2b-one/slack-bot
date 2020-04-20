@@ -1,40 +1,49 @@
-class App {
-  private subscriptions: { [key: string]: Array<{ projectId: string; branchName: string }> } = {}
-  private builds: Array<{ projectId: string; branchName: string; success: boolean }> = []
+import { sendMessage } from './utils/sendMessage'
 
-  subscribe(teamId: string, userId: string, projectId: string, branchName: string) {
-    const key = this.getKey(teamId, userId)
+interface BuildInfo {
+  projectId: string
+  branchName: string
+  success: boolean
+  buildUrl: string
+}
+
+class App {
+  private subscriptions: { [key: string]: string[] } = {}
+
+  subscribe(userId: string, projectId: string, branchName: string) {
+    const key = getBuildKey(projectId, branchName)
     if (!this.subscriptions[key]) {
       this.subscriptions[key] = []
     }
 
     const subs = this.subscriptions[key]
-    if (subs.some(s => s.projectId === projectId && s.branchName === branchName)) {
+    if (subs.every(user => user !== userId)) {
+      subs.push(userId)
+    }
+  }
+
+  reportBuild(buildInfo: BuildInfo) {
+    const key = getBuildKey(buildInfo.projectId, buildInfo.branchName)
+    const users = this.subscriptions[key] ?? []
+    if (users.length === 0) {
       return
     }
 
-    subs.push({ projectId, branchName })
+    return sendMessage(
+      users,
+      `${buildInfo.projectId}:${buildInfo.branchName} has ${
+        buildInfo.success ? 'been built' : 'failed'
+      }. See details <${buildInfo.buildUrl}|here>.`,
+    ).then(isOk => {
+      if (isOk && buildInfo.success) {
+        this.subscriptions[key] = []
+      }
+    })
   }
+}
 
-  getSubscriptions(teamId: string, userId: string) {
-    return this.subscriptions[this.getKey(teamId, userId)] ?? []
-  }
-
-  reportBuild(projectId: string, branchName: string, success: boolean) {
-    this.builds.push({ projectId, branchName, success })
-  }
-
-  getBuildInfo() {
-    return this.builds
-  }
-
-  clearBuildInfo() {
-    this.builds = []
-  }
-
-  private getKey(teamId: string, userId: string) {
-    return `${teamId}_${userId}`
-  }
+function getBuildKey(projectId: string, branchName: string) {
+  return `${projectId}_${branchName}`
 }
 
 export const app = new App()
