@@ -15,13 +15,13 @@ interface SlackCommandBody {
   trigger_id: string
 }
 
-const slackCommand = Router()
+const slackController = Router()
 
-slackCommand.post<{}, string, SlackCommandBody>('/commands', async (req, res) => {
+slackController.post<{}, string, SlackCommandBody>('/commands', async (req, res) => {
   // eslint-disable-next-line @typescript-eslint/camelcase
   const { user_id, command, text } = req.body
   switch (command) {
-    case '/pingme': {
+    case '/2b-notified': {
       const [project, branch] = text.split(' ')
       let resText = 'ok'
       if (branch && project) {
@@ -40,4 +40,4 @@ slackCommand.post<{}, string, SlackCommandBody>('/commands', async (req, res) =>
   }
 })
 
-export { slackCommand }
+export { slackController }
