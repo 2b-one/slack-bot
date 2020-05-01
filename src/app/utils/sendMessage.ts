@@ -1,4 +1,5 @@
 import Slack from 'slack'
+import { logger } from '../../logger'
 
 export function sendMessage(userId: string | string[], text: string) {
   const token = process.env.app_token!
@@ -7,13 +8,15 @@ export function sendMessage(userId: string | string[], text: string) {
   return Slack.conversations
     .open({ users, token })
     .then(result => {
-      if (!result.ok) {
-        throw new Error(result.error)
+      if (result.ok) {
+        return result.channel.id
       }
 
-      return result.channel.id
+      throw new Error(result.error)
     })
     .then(channel => Slack.chat.postMessage({ token, channel, text }))
     .then(result => result.ok)
-    .catch(console.error)
+    .catch(error => {
+      logger.error('slack.sendMessage', error)
+    })
 }
