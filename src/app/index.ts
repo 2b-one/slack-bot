@@ -1,3 +1,5 @@
+import { logger } from '../logger'
+import { isBranchExist } from './utils/isBranchExist'
 import { sendMessage } from './utils/sendMessage'
 
 interface BuildInfo {
@@ -9,8 +11,25 @@ interface BuildInfo {
 
 class App {
   private subscriptions: { [key: string]: string[] } = {}
+  private projects = ['one-metadata-server', 'one-metadata-frontend']
 
-  subscribe(userId: string, projectId: string, branchName: string) {
+  getProjectIds(branchName: string) {
+    return Promise.all(this.projects.map(projectId => isBranchExist(branchName, projectId))).then(
+      result => {
+        const matchedProjectsIds = []
+        for (let i = 0; i < result.length; i++) {
+          if (result[i]) {
+            matchedProjectsIds.push(this.projects[i])
+          }
+        }
+        return matchedProjectsIds
+      },
+    )
+  }
+
+  subscribe(userId: string, branchName: string, projectId: string) {
+    logger.info('app.subscribe', { userId, projectId, branchName })
+
     const key = getBuildKey(projectId, branchName)
     if (!this.subscriptions[key]) {
       this.subscriptions[key] = []
@@ -23,6 +42,8 @@ class App {
   }
 
   reportBuild(buildInfo: BuildInfo) {
+    logger.info('app.reportBuild', buildInfo)
+
     const key = getBuildKey(buildInfo.projectId, buildInfo.branchName)
     const users = this.subscriptions[key] ?? []
     if (users.length === 0) {
