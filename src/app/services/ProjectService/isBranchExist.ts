@@ -1,7 +1,7 @@
 import got from 'got'
-import { PagedResponse } from '../../types/BitbucketAPI'
+import { PagedResponse } from '../../../types/BitbucketAPI'
 
-export async function isBranchExist(branchName: string, projectId: string) {
+export async function isBranchExist(projectId: string, branchName: string) {
   return got<PagedResponse>(
     `https://bitbucket.atc.services/rest/api/1.0/projects/MDD/repos/${projectId}/commits`,
     {
