@@ -2,7 +2,7 @@ import bodyParser from 'body-parser'
 import { config } from 'dotenv'
 import express from 'express'
 import { apiController } from './api'
-import { logger } from './logger'
+import { logger } from './utils/logger'
 
 config()
 

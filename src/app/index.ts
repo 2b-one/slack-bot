@@ -1,6 +1,6 @@
-import { logger } from '../logger'
+import { logger } from '../utils/logger'
+import { sendMessage } from '../utils/sendMessage'
 import { ProjectService } from './services/ProjectService'
-import { sendMessage } from './utils/sendMessage'
 
 interface BuildInfo {
   projectId: string

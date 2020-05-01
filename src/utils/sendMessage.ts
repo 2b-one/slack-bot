@@ -1,5 +1,5 @@
 import Slack from 'slack'
-import { logger } from '../../logger'
+import { logger } from './logger'
 
 export function sendMessage(userId: string | string[], text: string) {
   const token = process.env.app_token!
