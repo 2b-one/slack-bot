@@ -9,7 +9,7 @@ apiController.use(clientVerification)
 apiController.use(slackController)
 apiController.use(jenkinsController)
 apiController.get('/status', (req, res) => {
-  res.status(200).send('ok')
+  res.sendStatus(200)
 })
 
 export { apiController }
