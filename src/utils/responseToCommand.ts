@@ -6,11 +6,6 @@ export function responseToCommand(responseUrl: string, payload: any): Promise<vo
     .post(responseUrl, { json: payload })
     .then(() => {})
     .catch(error => {
-      logger.error('slack.commandResponse', error)
+      logger.error('slack.commandResponse', { error: error.message })
     })
-}
-
-export function respondWithText(responseUrl: string, text: string): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  return responseToCommand(responseUrl, { text, replace_original: true })
 }

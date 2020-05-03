@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Router } from 'express'
 import { app } from '../../app'
 import { Command, CommandResponse } from '../../types/SlackAPI'
-import { respondWithText } from '../../utils/responseToCommand'
+import { responseToCommand } from '../../utils/responseToCommand'
+import { Action } from './utils/Action'
 
 const commandsController = Router()
 
 const errorBranchMsg = `command failed: incorrect branch`
 
 commandsController.post<{}, CommandResponse, Command>('/commands', async (req, res) => {
-  // eslint-disable-next-line @typescript-eslint/camelcase
   const { user_id, command, text, response_url } = req.body
   switch (command) {
     case '/2b-notified': {
@@ -17,20 +18,52 @@ commandsController.post<{}, CommandResponse, Command>('/commands', async (req, r
 
       const projectIds = await app.projects.getProjectIds(branch)
       if (projectIds.length === 0) {
-        return respondWithText(response_url, errorBranchMsg)
+        return responseToCommand(response_url, { text: errorBranchMsg })
       }
 
-      if (!project && projectIds.length === 1) {
-        app.subscribe(user_id, branch, projectIds[0])
-        return
+      if (!project) {
+        if (projectIds.length === 1) {
+          return app.subscribe(user_id, branch, projectIds[0])
+        } else {
+          return responseToCommand(response_url, {
+            text: 'input required',
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `\`${branch}\` found in multiple projects - user input required`,
+                },
+                accessory: {
+                  // https://api.slack.com/reference/block-kit/block-elements#static_multi_select
+                  type: 'multi_static_select',
+                  action_id: Action.TrackBranch,
+                  placeholder: {
+                    type: 'plain_text',
+                    text: 'select projects to track',
+                  },
+                  options: projectIds.map(projectId => {
+                    return {
+                      value: [branch, projectId].join(' '),
+                      text: {
+                        type: 'plain_text',
+                        text: projectId,
+                      },
+                    }
+                  }),
+                },
+              },
+            ],
+          })
+        }
       }
 
-      if (project && projectIds.includes(project)) {
+      if (projectIds.includes(project)) {
         app.subscribe(user_id, branch, project)
         return
       }
 
-      return respondWithText(response_url, `${errorBranchMsg} or project`)
+      return responseToCommand(response_url, { text: `${errorBranchMsg} or project` })
     }
 
     default: {
