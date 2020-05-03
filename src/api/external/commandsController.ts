@@ -1,19 +1,19 @@
 import { Router } from 'express'
-import { app } from '../app'
-import { SlackCommand } from '../types/SlackAPI'
-import { respondWithText } from '../utils/responseToCommand'
+import { app } from '../../app'
+import { Command, CommandResponse } from '../../types/SlackAPI'
+import { respondWithText } from '../../utils/responseToCommand'
 
-const slackController = Router()
+const commandsController = Router()
 
 const errorBranchMsg = `command failed: incorrect branch`
 
-slackController.post<{}, string, SlackCommand>('/commands', async (req, res) => {
+commandsController.post<{}, CommandResponse, Command>('/commands', async (req, res) => {
   // eslint-disable-next-line @typescript-eslint/camelcase
   const { user_id, command, text, response_url } = req.body
   switch (command) {
     case '/2b-notified': {
       const [branch, project] = text.split(' ')
-      res.status(200).send(branch ? 'command received' : errorBranchMsg)
+      res.status(200).json({ text: branch ? 'command received' : errorBranchMsg })
 
       const projectIds = await app.projects.getProjectIds(branch)
       if (projectIds.length === 0) {
@@ -34,10 +34,10 @@ slackController.post<{}, string, SlackCommand>('/commands', async (req, res) => 
     }
 
     default: {
-      res.status(200).send(`command "${command}" not found`)
+      res.status(200).json({ text: `command "${command}" not found` })
       return
     }
   }
 })
 
-export { slackController }
+export { commandsController }

@@ -2,7 +2,7 @@ import Slack from 'slack'
 import { logger } from './logger'
 
 export function sendMessage(userId: string | string[], text: string) {
-  const token = process.env.app_token!
+  const token = process.env.slack_app_token!
   const users = Array.isArray(userId) ? userId.join(',') : userId
 
   return Slack.conversations

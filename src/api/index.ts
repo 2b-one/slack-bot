@@ -1,13 +1,11 @@
 import { Router } from 'express'
-import { clientVerification } from './clientVerification'
-import { jenkinsController } from './jenkinsController'
-import { slackController } from './slackController'
+import { externalController } from './external'
+import { internalController } from './internal'
 
 const apiController = Router()
 
-apiController.use(clientVerification)
-apiController.use(slackController)
-apiController.use(jenkinsController)
+apiController.use('/internal', internalController)
+apiController.use('/external', externalController)
 apiController.get('/status', (req, res) => {
   res.sendStatus(200)
 })

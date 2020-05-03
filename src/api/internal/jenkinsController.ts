@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { app } from '../app'
+import { app } from '../../app'
 
 const jenkinsController = Router()
 

@@ -1,4 +1,4 @@
-export interface SlackCommand {
+export interface Command {
   token: string
   team_id: string
   team_domain: string
@@ -10,4 +10,10 @@ export interface SlackCommand {
   text: string
   response_url: string
   trigger_id: string
+}
+
+export interface CommandResponse {
+  text?: string
+  blocks?: any
+  replace_original?: boolean
 }
