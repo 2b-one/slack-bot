@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon",
     "lint": "eslint \"src/**/*.ts\"",
-    "format": "prettier \"src/**/*.{ts,json}\" --list-different",
+    "format": "prettier \"src/**/*.{ts,json}\" \"*.{js,json}\" --list-different",
     "format:fix": "yarn format --write"
   },
   "dependencies": {
