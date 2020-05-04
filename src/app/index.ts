@@ -2,8 +2,10 @@ import { logger } from '../utils/logger'
 import { sendMessage } from '../utils/sendMessage'
 import { ProjectService } from './services/ProjectService'
 
-interface BuildInfo {
-  projectId: string
+export interface BuildInfo {
+  jobId: string
+  bitbucketProject: string
+  bitbucketRepo: string
   branchName: string
   success: boolean
   buildUrl: string
@@ -31,7 +33,7 @@ class App {
   reportBuild(buildInfo: BuildInfo) {
     logger.info('app.reportBuild', buildInfo)
 
-    const key = getBuildKey(buildInfo.projectId, buildInfo.branchName)
+    const key = getBuildKey(buildInfo.bitbucketRepo, buildInfo.branchName)
     const users = this.subscriptions[key] ?? []
     if (users.length === 0) {
       return
@@ -39,7 +41,7 @@ class App {
 
     return sendMessage(
       users,
-      `${buildInfo.projectId}:${buildInfo.branchName} has ${
+      `${buildInfo.bitbucketRepo}:${buildInfo.branchName} has ${
         buildInfo.success ? 'been built' : 'failed'
       }. See details <${buildInfo.buildUrl}|here>.`,
     ).then(isOk => {
