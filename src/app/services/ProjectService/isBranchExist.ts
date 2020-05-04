@@ -10,8 +10,9 @@ export async function isBranchExist(projectId: string, branchName: string) {
         until: `refs/heads/${branchName}`,
         limit: 1,
       },
-      username: process.env.bitbucket_user,
-      password: process.env.bitbucket_password,
+      headers: {
+        authorization: `Bearer ${process.env.bitbucket_token}`,
+      },
     },
   )
     .then(res => res.body.size === 1)
