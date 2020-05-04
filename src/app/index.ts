@@ -15,8 +15,6 @@ class App {
   private subscriptions: { [key: string]: string[] } = {}
 
   subscribe(userId: string, branchName: string, projectId: string) {
-    logger.info('app.subscribe', { userId, projectId, branchName })
-
     const key = getBuildKey(projectId, branchName)
     if (!this.subscriptions[key]) {
       this.subscriptions[key] = []
@@ -25,6 +23,8 @@ class App {
     const subs = this.subscriptions[key]
     if (subs.every(user => user !== userId)) {
       subs.push(userId)
+
+      logger.info('app.subscribe', { userId, projectId, branchName })
     }
   }
 
