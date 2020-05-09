@@ -26,13 +26,13 @@ export async function getBranches(
     .then(res => {
       const { isLastPage, values } = res.body
       if (!isLastPage) {
-        logger.warn('bitbucket.untidyRepo', { projectId, repositoryName, limit })
+        logger.warn('bitbucket.untidyRepo', { bitbucketHost, projectId, repositoryName, limit })
       }
 
       return values
     })
     .catch(e => {
-      logger.error('bitbucket.getBranches', { projectId, repositoryName, error: e })
+      logger.error('bitbucket.getBranches', { bitbucketHost, projectId, repositoryName, error: e })
       return [] as BranchInfo[]
     })
 }
