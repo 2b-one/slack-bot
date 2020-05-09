@@ -1,14 +1,6 @@
+import { BuildInfo } from '../types'
 import { logger } from '../utils/logger'
 import { sendMessage } from '../utils/sendMessage'
-
-export interface BuildInfo {
-  jobId: string
-  bitbucketProject: string
-  bitbucketRepo: string
-  branchName: string
-  success: boolean
-  buildUrl: string
-}
 
 class App {
   private subscriptions: { [key: string]: string[] } = {}

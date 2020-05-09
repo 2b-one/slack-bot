@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { app, BuildInfo } from '../../app'
+import { app } from '../../app'
+import { BuildInfo } from '../../types'
 import { logger } from '../../utils/logger'
 
 const jenkinsController = Router()
