@@ -40,7 +40,7 @@ function handleActions(payload: BlockActionsPayload) {
       }
 
       return responseToCommand(response_url, {
-        text: `command processed: watching for ${tracked.map(t => `\`${t}\``).join(', ')}`,
+        text: `command received: watching for ${tracked.map(t => `\`${t}\``).join(', ')}`,
       })
     }
   }

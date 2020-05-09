@@ -1,4 +1,3 @@
-//type AbstractClassType<T> = Function & { prototype: T }
 export type ClassType<T> = { new (...args: any[]): T }
 
 export class ServiceContainer {
@@ -6,6 +5,7 @@ export class ServiceContainer {
 
   register<T>(serviceName: string, instance: T) {
     this.services[serviceName] = instance
+    return instance
   }
 
   get<T>(ServiceClass: ClassType<T>): T {

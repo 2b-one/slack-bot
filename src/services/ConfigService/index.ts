@@ -12,6 +12,7 @@ interface Config {
     signSecret: string
   }
   bitbucket: {
+    host: string
     accessToken: string
     repositories: RepositoryConfig[]
   }

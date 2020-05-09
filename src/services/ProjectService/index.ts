@@ -1,52 +1,57 @@
 import { inject } from '../../utils/inject'
 import { ConfigService } from '../ConfigService'
-import { isBranchExist } from './isBranchExist'
+import { getBranches } from './getBranches'
+
+interface Registry {
+  [projectId: string]: {
+    [repositoryName: string]: {
+      branches: string[]
+    }
+  }
+}
 
 export class ProjectService {
   @inject
   private readonly configService!: ConfigService
 
-  private requestMap: { [key: string]: Promise<boolean> } = {}
-
-  private get projectIds(): string[] {
-    return this.configService.data.bitbucket.repositories.map(repo => repo.name)
-  }
+  private registry: Registry = {}
 
   constructor() {}
 
+  async initialize(): Promise<void> {
+    const { repositories, host, accessToken } = this.configService.data.bitbucket
+    return Promise.all(
+      repositories.map(repo => getBranches(repo.projectId, repo.name, host, accessToken)),
+    ).then(allResults => {
+      for (let i = 0; i < allResults.length; i++) {
+        const repo = repositories[i]
+        const result = allResults[i]
+
+        if (!this.registry[repo.projectId]) {
+          this.registry[repo.projectId] = {}
+        }
+
+        this.registry[repo.projectId][repo.name] = {
+          branches: result.map(bi => bi.displayId),
+        }
+      }
+    })
+  }
+
   /**
-   * Returns ids of the projects which contain requested branch
+   * Returns list of branches with requested name
    * @param branchName {string}
    */
-  getProjectIds(branchName: string) {
-    return Promise.all(this.projectIds.map(projectId => this.isExist(projectId, branchName))).then(
-      result => {
-        const matchedProjectsIds = []
-        for (let i = 0; i < result.length; i++) {
-          if (result[i]) {
-            matchedProjectsIds.push(this.projectIds[i])
-          }
+  findBranch(branchName: string) {
+    const result = []
+    for (const [projectId, project] of Object.entries(this.registry)) {
+      for (const [repositoryName, repo] of Object.entries(project)) {
+        if (repo.branches.includes(branchName)) {
+          result.push({ projectId, repositoryName, branchName })
         }
-        return matchedProjectsIds
-      },
-    )
-  }
-
-  private async isExist(projectId: string, branchName: string) {
-    const key = getKey(projectId, branchName)
-    if (this.requestMap[key]) {
-      return this.requestMap[key]
+      }
     }
 
-    this.requestMap[key] = isBranchExist(projectId, branchName).then(result => {
-      delete this.requestMap[key]
-      return result
-    })
-
-    return this.requestMap[key]
+    return result
   }
-}
-
-function getKey(projectId: string, branchName: string) {
-  return `${projectId}_${branchName}`
 }
