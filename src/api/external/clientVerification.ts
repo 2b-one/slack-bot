@@ -1,5 +1,7 @@
 import crypto from 'crypto'
 import { RequestHandler } from 'express'
+import { ConfigService } from '../../services/ConfigService'
+import { serviceContainer } from '../../services/ServiceContainer'
 import { logger } from '../../utils/logger'
 
 /**
@@ -9,10 +11,11 @@ import { logger } from '../../utils/logger'
 export const clientVerification: RequestHandler = (req, res, next) => {
   const requestSignature = req.header('x-slack-signature') as string
   const requestTimestamp = req.header('x-slack-request-timestamp')
+  const configService = serviceContainer.get(ConfigService)
 
   const [version, hash] = requestSignature.split('=')
   const reqHash = crypto
-    .createHmac('sha256', process.env.slack_sign_secret!)
+    .createHmac('sha256', configService.data.slack.signSecret)
     .update(`${version}:${requestTimestamp}:${(req as any).rawBody}`)
     .digest('hex')
 

@@ -1,5 +1,5 @@
 import got from 'got'
-import { PagedResponse } from '../../../types/BitbucketAPI'
+import { PagedResponse } from '../../types/BitbucketAPI'
 
 export async function isBranchExist(projectId: string, branchName: string) {
   return got<PagedResponse>(

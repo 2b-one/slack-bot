@@ -1,8 +1,10 @@
 import Slack from 'slack'
+import { ConfigService } from '../services/ConfigService'
+import { serviceContainer } from '../services/ServiceContainer'
 import { logger } from './logger'
 
 export function sendMessage(userId: string | string[], text: string) {
-  const token = process.env.slack_app_token!
+  const token = serviceContainer.get(ConfigService).data.slack.appToken
   const users = Array.isArray(userId) ? userId.join(',') : userId
 
   return Slack.conversations

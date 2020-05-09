@@ -1,0 +1,22 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "slack": {
+    "appToken": "xxxx-xxxxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx",
+    "signSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "bitbucket": {
+    "accessToken": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "repositories": [
+      {
+        "projectId": "MDD",
+        "name": "one-metadata-frontend"
+      },
+      {
+        "projectId": "MDD",
+        "name": "one-metadata-server"
+      }
+    ]
+  }
+}

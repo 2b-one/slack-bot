@@ -1,6 +1,5 @@
 import { logger } from '../utils/logger'
 import { sendMessage } from '../utils/sendMessage'
-import { ProjectService } from './services/ProjectService'
 
 export interface BuildInfo {
   jobId: string
@@ -12,8 +11,6 @@ export interface BuildInfo {
 }
 
 class App {
-  projects = new ProjectService()
-
   private subscriptions: { [key: string]: string[] } = {}
 
   subscribe(userId: string, branchName: string, projectId: string) {

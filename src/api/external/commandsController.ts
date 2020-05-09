@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Router } from 'express'
 import { app } from '../../app'
+import { ProjectService } from '../../services/ProjectService'
+import { serviceContainer } from '../../services/ServiceContainer'
 import { Command, CommandResponse } from '../../types/SlackAPI'
 import { responseToCommand } from '../../utils/responseToCommand'
 import { Action } from './utils/Action'
@@ -16,7 +18,7 @@ commandsController.post<{}, CommandResponse, Command>('/commands', async (req, r
       const [branch, project] = text.split(' ')
       res.status(200).json({ text: branch ? 'command received' : errorBranchMsg })
 
-      const projectIds = await app.projects.getProjectIds(branch)
+      const projectIds = await serviceContainer.get(ProjectService).getProjectIds(branch)
       if (projectIds.length === 0) {
         return responseToCommand(response_url, { text: errorBranchMsg })
       }
