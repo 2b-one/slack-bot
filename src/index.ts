@@ -18,7 +18,7 @@ async function start() {
     const server = new Server(configService.data.server.port)
     server.start()
   } catch (e) {
-    logger.error('bootstrap.config', { error: e })
+    logger.error('bootstrap.config', { error: e.message })
   }
 }
 

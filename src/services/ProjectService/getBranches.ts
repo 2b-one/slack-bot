@@ -32,7 +32,12 @@ export async function getBranches(
       return values
     })
     .catch(e => {
-      logger.error('bitbucket.getBranches', { bitbucketHost, projectId, repositoryName, error: e })
+      logger.error('bitbucket.getBranches', {
+        error: e.message,
+        bitbucketHost,
+        projectId,
+        repositoryName,
+      })
       return [] as BranchInfo[]
     })
 }
