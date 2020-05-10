@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { app } from '../../app'
+import { serviceContainer } from '../../services/ServiceContainer'
+import { SubscriptionService } from '../../services/SubscriptionService'
 import { BuildInfo } from '../../types'
 import { logger } from '../../utils/logger'
 
@@ -7,7 +8,8 @@ const jenkinsController = Router()
 
 jenkinsController.post('/jenkins', (req, res) => {
   if (isBuildInfo(req.body)) {
-    app.reportBuild(req.body)
+    const subscriptionService = serviceContainer.get(SubscriptionService)
+    subscriptionService.reportBuild(req.body)
     res.sendStatus(200)
   } else {
     logger.warn('jenkins.badBuildInfo', { data: req.body })

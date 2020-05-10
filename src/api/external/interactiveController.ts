@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Router } from 'express'
-import { app } from '../../app'
+import { serviceContainer } from '../../services/ServiceContainer'
+import { SubscriptionService } from '../../services/SubscriptionService'
 import { BlockActionsPayload, MultiStaticSelectAction } from '../../types/SlackAPI'
 import { logger } from '../../utils/logger'
 import { responseToCommand } from '../../utils/responseToCommand'
@@ -34,9 +35,10 @@ function handleActions(payload: BlockActionsPayload) {
     if (selectAction.action_id === Action.TrackBranch) {
       const tracked = []
       for (const option of selectAction.selected_options) {
-        const [branchName, projectId] = option.value.split(' ')
-        app.subscribe(user.id, branchName, projectId)
-        tracked.push(`${projectId}/${branchName}`)
+        const [projectId, repositoryName, branchName] = option.value.split(' ')
+        const subscriptionService = serviceContainer.get(SubscriptionService)
+        subscriptionService.subscribe(user.id, { projectId, repositoryName, branchName })
+        tracked.push(`${repositoryName}/${branchName}`)
       }
 
       return responseToCommand(response_url, {

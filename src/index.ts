@@ -3,6 +3,7 @@ import { Server } from './Server'
 import { ConfigService } from './services/ConfigService'
 import { ProjectService } from './services/ProjectService'
 import { serviceContainer } from './services/ServiceContainer'
+import { SubscriptionService } from './services/SubscriptionService'
 import { logger } from './utils/logger'
 
 async function start() {
@@ -14,6 +15,8 @@ async function start() {
     const projectService = serviceContainer.register('projectService', new ProjectService())
 
     await projectService.initialize()
+
+    serviceContainer.register('subscriptionService', new SubscriptionService())
 
     const server = new Server(configService.data.server.port)
     server.start()
