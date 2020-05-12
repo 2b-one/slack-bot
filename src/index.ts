@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import { Server } from './Server'
 import { ConfigService } from './services/ConfigService'
+import { FlowService } from './services/FlowService'
 import { ProjectService } from './services/ProjectService'
 import { serviceContainer } from './services/ServiceContainer'
 import { SubscriptionService } from './services/SubscriptionService'
@@ -17,6 +18,7 @@ async function start() {
     await projectService.initialize()
 
     serviceContainer.register('subscriptionService', new SubscriptionService())
+    serviceContainer.register('flowService', new FlowService())
 
     const server = new Server(configService.data.server.port)
     server.start()

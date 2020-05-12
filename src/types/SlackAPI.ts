@@ -38,14 +38,25 @@ export interface MultiStaticSelectAction {
   action_ts: string
 }
 
-export interface BlockActionsPayload {
-  type: 'block_actions'
-  user: {
-    id: string
-    username: string
-    name: string
-    team_id: string
-  }
-  response_url: string
-  actions: MultiStaticSelectAction[]
+interface User {
+  id: string
+  username: string
+  name: string
+  team_id: string
 }
+
+export interface BlockActionsPayload<T extends Array<unknown> = unknown[]> {
+  type: 'block_actions'
+  user: User
+  response_url: string
+  actions: T
+}
+
+export interface BlockSuggestionPayload {
+  type: 'block_suggestion'
+  user: User
+  action_id: string
+  value: string
+}
+
+export type InteractivePayload = BlockActionsPayload | BlockSuggestionPayload
