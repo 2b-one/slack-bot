@@ -1,21 +1,27 @@
-import { BlockActionsPayload, Command, CommandResponse } from '../../../types/SlackAPI'
+import {
+  BlockActionsPayload,
+  BlockSuggestionPayload,
+  Command,
+  CommandResponse,
+  ViewSubmissionPayload,
+} from '../../../types/SlackAPI'
 
-let lastCreatedFlow = 0
+interface Option {
+  text: string
+  value: string
+}
 
 export abstract class Flow {
-  protected id = `$${lastCreatedFlow++}`
+  protected abstract actionIds: string[]
 
-  constructor(protected cmd: Command) {}
-
-  abstract start(): CommandResponse
-
-  abstract continue(data: BlockActionsPayload): boolean
-
-  match(actionId: string) {
-    return actionId.split('_')[0] === this.id
+  abstract run(data: Command): CommandResponse | boolean
+  continue(_data: BlockActionsPayload): void {}
+  submit(_data: ViewSubmissionPayload): void {}
+  suggest(_data: BlockSuggestionPayload): Option[] {
+    return []
   }
 
-  getActionId(actionName: string) {
-    return `${this.id}_${actionName}`
+  match(actionId: string) {
+    return this.actionIds.includes(actionId)
   }
 }

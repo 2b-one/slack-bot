@@ -59,4 +59,18 @@ export interface BlockSuggestionPayload {
   value: string
 }
 
-export type InteractivePayload = BlockActionsPayload | BlockSuggestionPayload
+export interface ViewSubmissionPayload<T extends { [key: string]: any } = { [key: string]: any }> {
+  type: 'view_submission'
+  user: User
+  view: {
+    callback_id: string
+    state: {
+      values: T
+    }
+  }
+}
+
+export type InteractivePayload =
+  | BlockActionsPayload
+  | ViewSubmissionPayload
+  | BlockSuggestionPayload

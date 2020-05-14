@@ -16,11 +16,32 @@ interactiveController.post('/interactive', (req, res) => {
     return res.sendStatus(400)
   }
 
+  const flowService = serviceContainer.get(FlowService)
   switch (payload.type) {
     case 'block_actions': {
-      const flowService = serviceContainer.get(FlowService)
       flowService.continue(payload)
       return res.sendStatus(200)
+    }
+
+    case 'view_submission': {
+      flowService.submit(payload)
+      // it's important to send empty body, otherwise slack will reject it
+      return res.status(200).send()
+    }
+
+    case 'block_suggestion': {
+      return res.status(200).json({
+        options: flowService.suggest(payload).map(o => {
+          return {
+            text: {
+              type: 'plain_text',
+              text: o.text,
+              emoji: true,
+            },
+            value: o.value,
+          }
+        }),
+      })
     }
 
     default: {

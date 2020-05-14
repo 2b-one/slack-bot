@@ -1,10 +1,19 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { BlockActionsPayload, MultiStaticSelectAction } from '../../../types/SlackAPI'
-import { inject } from '../../../utils/inject'
-import { responseToCommand } from '../../../utils/responseToCommand'
-import { ProjectService } from '../../ProjectService'
-import { SubscriptionService } from '../../SubscriptionService'
-import { Flow } from './Flow'
+import {
+  BlockActionsPayload,
+  Command,
+  CommandResponse,
+  MultiStaticSelectAction,
+} from '../../../../types/SlackAPI'
+import { inject } from '../../../../utils/inject'
+import { ProjectService } from '../../../ProjectService'
+import { SubscriptionService } from '../../../SubscriptionService'
+import { Flow } from '../Flow'
+import { respondToCommand } from './respondToCommand'
+
+enum SubscribeFlowAction {
+  Track = 'subscribe-flow-track',
+}
 
 export class SubscribeFlow extends Flow {
   @inject
@@ -13,8 +22,10 @@ export class SubscribeFlow extends Flow {
   @inject
   private projectService!: ProjectService
 
-  start() {
-    const { user_id, text: branchName } = this.cmd
+  protected actionIds = [SubscribeFlowAction.Track]
+
+  run(data: Command): CommandResponse | boolean {
+    const { user_id, text: branchName } = data
     const branches = this.projectService.findBranch(branchName)
     if (branches.length === 0) {
       return { text: `command failed: incorrect branch` }
@@ -22,7 +33,7 @@ export class SubscribeFlow extends Flow {
 
     if (branches.length === 1) {
       this.subscriptionService.subscribe(user_id, branches[0])
-      return { text: 'command received' }
+      return true
     }
 
     return {
@@ -37,7 +48,7 @@ export class SubscribeFlow extends Flow {
           accessory: {
             // https://api.slack.com/reference/block-kit/block-elements#static_multi_select
             type: 'multi_static_select',
-            action_id: this.getActionId('track'),
+            action_id: SubscribeFlowAction.Track,
             placeholder: {
               type: 'plain_text',
               text: 'Select projects to track',
@@ -61,7 +72,7 @@ export class SubscribeFlow extends Flow {
     const { actions, response_url, user } = data
     const selectAction = actions[0]
     if (selectAction.selected_options.length === 0) {
-      return false
+      return
     }
 
     const tracked = []
@@ -71,10 +82,8 @@ export class SubscribeFlow extends Flow {
       tracked.push(`${repositoryName}/${branchName}`)
     }
 
-    responseToCommand(response_url, {
+    respondToCommand(response_url, {
       text: `command received: watching for ${tracked.map(t => `\`${t}\``).join(', ')}`,
     })
-
-    return true
   }
 }

@@ -57,6 +57,11 @@ export class ProjectService {
     return result
   }
 
+  getBranches(projectId: string, repositoryName: string) {
+    const branches = this.registry[projectId]?.[repositoryName]?.branches
+    return branches ? [...branches] : []
+  }
+
   addBranch(data: BranchInfo) {
     const branches = this.registry[data.projectId]?.[data.repositoryName]?.branches
     if (!branches) {

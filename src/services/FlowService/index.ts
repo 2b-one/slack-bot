@@ -1,36 +1,52 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { BlockActionsPayload, Command, CommandResponse } from '../../types/SlackAPI'
-import { Flow } from './flows/Flow'
-import { SubscribeFlow } from './flows/SubscribeFlow'
+import {
+  BlockActionsPayload,
+  BlockSuggestionPayload,
+  Command,
+  CommandResponse,
+  ViewSubmissionPayload,
+} from '../../types/SlackAPI'
+import { flows } from './flows'
+
+const flowInstances = Object.values(flows)
 
 export class FlowService {
-  private flows: { [key: string]: { new (cmd: Command): Flow } } = {
-    '/2b-notified': SubscribeFlow,
-  }
-
-  private flowInstances: Flow[] = []
-
-  start(cmd: Command): CommandResponse {
-    const Flow = this.flows[cmd.command]
-    if (!Flow) {
-      return { text: `command "${cmd.command}" not found` }
+  run(data: Command): CommandResponse {
+    const flow = flows[data.command]
+    if (!flow) {
+      return { text: `command "${data.command}" not found` }
     }
 
-    const flow = new Flow(cmd)
-    this.flowInstances.push(flow)
-    return flow.start()
+    const response = flow.run(data)
+    if (typeof response === 'object') {
+      return response
+    }
+
+    return response ? { text: 'command received' } : { text: 'command failed' }
   }
 
   continue(data: BlockActionsPayload<any[]>) {
     const actionId = data.actions[0]?.action_id
-    const flow = this.flowInstances.find(flowInstance => flowInstance.match(actionId))
+    const flow = flowInstances.find(flowInstance => flowInstance.match(actionId))
     if (!flow) {
       return
     }
 
-    const isFinished = flow.continue(data)
-    if (isFinished) {
-      this.flowInstances = this.flowInstances.filter(f => f !== flow)
+    flow.continue(data)
+  }
+
+  submit(data: ViewSubmissionPayload) {
+    const flow = flowInstances.find(flowInstance => flowInstance.match(data.view.callback_id))
+    if (!flow) {
+      return
     }
+
+    flow.submit(data)
+  }
+
+  suggest(data: BlockSuggestionPayload) {
+    const actionId = data.action_id
+    const flow = flowInstances.find(flowInstance => flowInstance.match(actionId))
+    return flow ? flow.suggest(data) : []
   }
 }
