@@ -41,7 +41,7 @@ export class FlowService {
       return
     }
 
-    flow.submit(data)
+    return flow.submit(data)
   }
 
   suggest(data: BlockSuggestionPayload) {

@@ -11,6 +11,12 @@ interface Config {
     appToken: string
     signSecret: string
   }
+  jenkins: {
+    host: string
+    deployJobPath: string
+    username: string
+    password: string
+  }
   bitbucket: {
     host: string
     accessToken: string

@@ -6,6 +6,12 @@
     "appToken": "xxxx-xxxxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx",
     "signSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   },
+  "jenkins": {
+    "host": "https://jenkins.com/",
+    "deployJobPath": "/job/deployWithParameters",
+    "username": "john.doe",
+    "password": "xxxxxxxxx"
+  },
   "bitbucket": {
     "host": "https://bitbucket.com/",
     "accessToken": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",

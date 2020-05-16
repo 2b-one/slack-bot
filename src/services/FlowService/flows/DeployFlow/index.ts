@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import Fuse from 'fuse.js'
+import { v4 } from 'uuid'
 import {
   BlockSuggestionPayload,
   Command,
@@ -10,8 +11,9 @@ import { inject } from '../../../../utils/inject'
 import { ProjectService } from '../../../ProjectService'
 import { Flow } from '../Flow'
 import { DeployFlowAction } from './DeployFlowAction'
-import { deployParams } from './DeployParam'
+import { BranchDeployParam, deployParams } from './DeployParam'
 import { openView } from './utils/openView'
+import { triggerBuild } from './utils/triggerBuild'
 
 export class DeployFlow extends Flow {
   @inject
@@ -45,40 +47,55 @@ export class DeployFlow extends Flow {
   }
 
   suggest(data: BlockSuggestionPayload) {
-    const branches =
-      data.action_id === DeployFlowAction.SelectFE
-        ? this.projectService.getBranches('MDD', 'one-metadata-frontend')
-        : this.projectService.getBranches('MDD', 'one-metadata-server')
+    const param = deployParams.find(p => p.actionId === data.action_id)
+    if (!param || !(param instanceof BranchDeployParam)) {
+      return []
+    }
 
-    const fuse = new Fuse(branches, {
+    const fuse = new Fuse(param.getBranches(), {
       shouldSort: true,
       includeScore: true,
       minMatchCharLength: 1,
       threshold: 0.3,
       distance: 100,
     })
-    const result = fuse.search(data.value)
-    return result.map(match => ({
+
+    return fuse.search(data.value).map(match => ({
       text: match.item,
       value: match.item,
     }))
   }
 
   submit(data: ViewSubmissionPayload) {
-    const values = Object.values(data.view.state.values).reduce((seed: any, inputSection) => {
-      const valueController = Object.entries(inputSection as any)[0]
-      if (valueController) {
-        const [key, data] = valueController as any
-        const deployParam = deployParams.find(p => p.actionId === key)
-        if (deployParam) {
-          seed[deployParam.name] = deployParam.parse(data)
+    const trackId = v4()
+    const values = Object.values(data.view.state.values).reduce(
+      (seed: any, inputSection) => {
+        const valueController = Object.entries(inputSection as any)[0]
+        if (valueController) {
+          const [key, data] = valueController as any
+          const deployParam = deployParams.find(p => p.actionId === key)
+          if (deployParam) {
+            seed[deployParam.name] = deployParam.parse(data)
+          }
         }
-      }
 
-      return seed
-    }, {})
+        return seed
+      },
+      {
+        NOMAD_DC: 'dev1',
+        DPM_APP_IMAGE: 'dev',
+        DPE_APP_IMAGE: 'dev',
+        AICORE_APP_IMAGE: 'latest',
+        RDM_MDM_APP_IMAGE: '0.1.10',
+        DEPLOY_GROUPS: 'MMM,FE,DP,AI',
+        MMM_DROP_FIRST: true,
+        MMM_LOAD_DATA: true,
+        MMM_ORACLE: false,
+        // artificial parameter to track on build completion
+        TRACK_ID: trackId,
+      },
+    )
 
-    // eslint-disable-next-line no-console
-    console.log(values)
+    return triggerBuild(values).then(isOk => isOk)
   }
 }

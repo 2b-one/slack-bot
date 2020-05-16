@@ -6,18 +6,18 @@ import {
   ViewSubmissionPayload,
 } from '../../../types/SlackAPI'
 
-interface Option {
-  text: string
-  value: string
-}
-
 export abstract class Flow {
   protected abstract actionIds: string[]
 
   abstract run(data: Command): CommandResponse | boolean
+
   continue(_data: BlockActionsPayload): void {}
-  submit(_data: ViewSubmissionPayload): void {}
-  suggest(_data: BlockSuggestionPayload): Option[] {
+
+  submit(_data: ViewSubmissionPayload): Promise<boolean> {
+    return Promise.resolve(true)
+  }
+
+  suggest(_data: BlockSuggestionPayload): { text: string; value: string }[] {
     return []
   }
 

@@ -8,7 +8,7 @@ import { logger } from '../../utils/logger'
 
 const interactiveController = Router()
 
-interactiveController.post('/interactive', (req, res) => {
+interactiveController.post('/interactive', async (req, res) => {
   let payload: InteractivePayload
   try {
     payload = JSON.parse(req.body.payload)
@@ -25,9 +25,11 @@ interactiveController.post('/interactive', (req, res) => {
     }
 
     case 'view_submission': {
-      flowService.submit(payload)
-      // it's important to send empty body, otherwise slack will reject it
-      return res.status(200).send()
+      const result = await flowService.submit(payload)
+      return result
+        ? // it's important to send empty body, otherwise slack will reject it
+          res.status(200).send()
+        : res.sendStatus(500)
     }
 
     case 'block_suggestion': {
