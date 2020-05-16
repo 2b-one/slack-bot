@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { FlowService } from '../../services/FlowService'
 import { serviceContainer } from '../../services/ServiceContainer'
 import { InteractivePayload } from '../../types/SlackAPI'
+import { createSafeOptions } from '../../utils/createSafeOption'
 import { logger } from '../../utils/logger'
 
 const interactiveController = Router()
@@ -31,16 +32,7 @@ interactiveController.post('/interactive', (req, res) => {
 
     case 'block_suggestion': {
       return res.status(200).json({
-        options: flowService.suggest(payload).map(o => {
-          return {
-            text: {
-              type: 'plain_text',
-              text: o.text,
-              emoji: true,
-            },
-            value: o.value,
-          }
-        }),
+        options: createSafeOptions(flowService.suggest(payload)),
       })
     }
 

@@ -58,14 +58,10 @@ export class DeployFlow extends Flow {
       distance: 100,
     })
     const result = fuse.search(data.value)
-    return result.slice(0, 100).map(match => {
-      // https://api.slack.com/reference/block-kit/composition-objects#option
-      const safeText = match.item.slice(0, 75)
-      return {
-        text: safeText,
-        value: safeText,
-      }
-    })
+    return result.map(match => ({
+      text: match.item,
+      value: match.item,
+    }))
   }
 
   submit(data: ViewSubmissionPayload) {
