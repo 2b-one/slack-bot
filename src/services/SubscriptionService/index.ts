@@ -32,16 +32,18 @@ export class SubscriptionService {
 
     logger.info('subscriptionService.reportBuild', buildInfo)
 
-    return sendMessage(
-      users,
-      `${buildInfo.bitbucketRepo}:${buildInfo.branchName} has ${
-        buildInfo.success ? 'been built' : 'failed'
-      }. See details <${buildInfo.buildUrl}|here>.`,
-    ).then(isOk => {
-      if (isOk && buildInfo.success) {
-        this.subscriptions[key] = []
-      }
-    })
+    users.forEach(user =>
+      sendMessage(
+        user,
+        `*${buildInfo.bitbucketRepo}:${buildInfo.branchName}* has ${
+          buildInfo.success ? 'been built' : 'failed'
+        }. See details <${buildInfo.buildUrl}|here>.`,
+      ).then(isOk => {
+        if (isOk && buildInfo.success) {
+          this.subscriptions[key] = []
+        }
+      }),
+    )
   }
 }
 
