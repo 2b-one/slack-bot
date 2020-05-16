@@ -3,6 +3,7 @@ import { ProjectService } from '../../../ProjectService'
 import { getSelectBox } from './blocks/getSelectBox'
 import { getTextInput } from './blocks/getTextInput'
 import { DeployFlowAction, DeployFlowParamAction } from './DeployFlowAction'
+import { ImageTagBuilder } from './utils/ImageTagBuilder'
 
 interface DeployParam<T> {
   name: string
@@ -34,12 +35,16 @@ export class BranchDeployParam implements DeployParam<string> {
 
   parse(data: any) {
     const rawValue = data.selected_option.value as string
+    /**
+     * Option values must be maximum 75 characters long to be processed by Slack API.
+     * So we need to restore values which match this length.
+     *
+     * @see {@link createSafeOption} for details
+     */
     const restoredBranchName =
       rawValue.length === 75 ? this.getBranches().find(b => b.startsWith(rawValue))! : rawValue
-    // TODO check image tag generation logic (length, case, etc)
-    const imageTag = `0.0.0-${restoredBranchName}-SNAPSHOT`
 
-    return imageTag
+    return new ImageTagBuilder(restoredBranchName).exec()
   }
 }
 
