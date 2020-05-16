@@ -8,6 +8,7 @@ import {
   ViewSubmissionPayload,
 } from '../../../../types/SlackAPI'
 import { inject } from '../../../../utils/inject'
+import { DeployTrackService } from '../../../DeployTrackService'
 import { ProjectService } from '../../../ProjectService'
 import { Flow } from '../Flow'
 import { DeployFlowAction } from './DeployFlowAction'
@@ -18,6 +19,9 @@ import { triggerBuild } from './utils/triggerBuild'
 export class DeployFlow extends Flow {
   @inject
   private projectService!: ProjectService
+
+  @inject
+  private deployTrackService!: DeployTrackService
 
   protected actionIds = [DeployFlowAction.Modal, ...deployParams.map(p => p.actionId)]
 
@@ -96,6 +100,11 @@ export class DeployFlow extends Flow {
       },
     )
 
-    return triggerBuild(values).then(isOk => isOk)
+    return triggerBuild(values).then(isOk => {
+      if (isOk) {
+        this.deployTrackService.subscribe(data.user.id, trackId)
+      }
+      return isOk
+    })
   }
 }

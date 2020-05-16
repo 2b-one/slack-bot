@@ -12,3 +12,20 @@ export interface BuildInfo {
   success: boolean
   buildUrl: string
 }
+
+interface BaseDeployInfo {
+  trackId: string
+  buildUrl: string
+}
+
+interface SuccessDeployInfo extends BaseDeployInfo {
+  success: true
+  nomadUrl: string
+  envUrl: string
+}
+
+interface FailedDeployInfo extends BaseDeployInfo {
+  success: false
+}
+
+export type DeployInfo = SuccessDeployInfo | FailedDeployInfo

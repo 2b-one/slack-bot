@@ -6,8 +6,8 @@ import {
   MultiStaticSelectAction,
 } from '../../../../types/SlackAPI'
 import { inject } from '../../../../utils/inject'
+import { BuildTrackService } from '../../../BuildTrackService'
 import { ProjectService } from '../../../ProjectService'
-import { SubscriptionService } from '../../../SubscriptionService'
 import { Flow } from '../Flow'
 import { respondToCommand } from './respondToCommand'
 
@@ -15,9 +15,9 @@ enum SubscribeFlowAction {
   Track = 'subscribe-flow-track',
 }
 
-export class SubscribeFlow extends Flow {
+export class BuildNotificationFlow extends Flow {
   @inject
-  private subscriptionService!: SubscriptionService
+  private buildTrackService!: BuildTrackService
 
   @inject
   private projectService!: ProjectService
@@ -32,7 +32,7 @@ export class SubscribeFlow extends Flow {
     }
 
     if (branches.length === 1) {
-      this.subscriptionService.subscribe(user_id, branches[0])
+      this.buildTrackService.subscribe(user_id, branches[0])
       return true
     }
 
@@ -78,7 +78,7 @@ export class SubscribeFlow extends Flow {
     const tracked = []
     for (const option of selectAction.selected_options) {
       const [projectId, repositoryName, branchName] = option.value.split(' ')
-      this.subscriptionService.subscribe(user.id, { projectId, repositoryName, branchName })
+      this.buildTrackService.subscribe(user.id, { projectId, repositoryName, branchName })
       tracked.push(`${repositoryName}/${branchName}`)
     }
 

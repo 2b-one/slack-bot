@@ -1,9 +1,9 @@
 import { DeployFlow } from './DeployFlow'
 import { Flow } from './Flow'
-import { SubscribeFlow } from './SubscribeFlow'
+import { BuildNotificationFlow } from './BuildNotificationFlow'
 
 export const flows: { [key: string]: Flow } = {
-  '/2b-notified': new SubscribeFlow(),
+  '/2b-notified': new BuildNotificationFlow(),
   '/2b-deployed': new DeployFlow(),
 }
 

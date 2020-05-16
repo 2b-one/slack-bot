@@ -12,7 +12,7 @@ declare module 'slack' {
     }>
   }
 
-  interface TextBlock {
+  interface Block {
     type: string
     [key: string]: string
   }
@@ -22,7 +22,7 @@ declare module 'slack' {
       token: string
       channel: string
       text?: string
-      blocks?: TextBlock[]
+      blocks?: Block[]
     }): Promise<{
       ok: boolean
       error?: string
