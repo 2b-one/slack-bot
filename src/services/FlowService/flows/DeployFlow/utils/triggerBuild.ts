@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import serializeForm from 'form-urlencoded'
 import got from 'got'
 import * as url from 'url'
 import { logger } from '../../../../../utils/logger'
@@ -14,10 +15,10 @@ export function triggerBuild(data: { [key: string]: any }) {
     .post(url.resolve(host, deployJobPath), {
       // TODO: figure out jenkins certificate
       rejectUnauthorized: false,
-      responseType: 'json',
-      json: {
-        parameters: Object.entries(data).map(([name, value]) => ({ name, value })),
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
       },
+      body: serializeForm(data),
       username,
       password,
     })
