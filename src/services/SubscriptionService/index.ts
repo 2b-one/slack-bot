@@ -48,5 +48,7 @@ export class SubscriptionService {
 }
 
 function getBuildKey(branch: BranchInfo) {
-  return `${branch.projectId}_${branch.repositoryName}_${branch.branchName}`
+  return [branch.projectId, branch.repositoryName, branch.branchName]
+    .map(s => s.toLocaleLowerCase())
+    .join('_')
 }
