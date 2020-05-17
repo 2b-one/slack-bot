@@ -40,7 +40,7 @@ export class BuildTrackService {
         }. See details <${data.buildUrl}|here>.`,
       ).then(isOk => {
         if (isOk && data.success) {
-          this.subscriptions[key] = []
+          this.subscriptions[key] = this.subscriptions[key].filter(userId => userId !== user)
         }
       }),
     )
