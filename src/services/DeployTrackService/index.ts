@@ -28,7 +28,7 @@ export class DeployTrackService {
     }
 
     const [userId, trackIds] = result
-    logger.info('deployTrackService.reportDeploy', { ...data, userId })
+    logger.info('deployTrackService.reportDeploy', { userId, data })
 
     const message = data.success
       ? `deployment is finished: <${data.envUrl}|${data.envUrl}>`

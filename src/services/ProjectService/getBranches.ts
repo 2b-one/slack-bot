@@ -37,6 +37,7 @@ export async function getBranches(
         bitbucketHost,
         projectId,
         repositoryName,
+        limit,
       })
       return [] as BranchInfo[]
     })

@@ -30,7 +30,7 @@ export class BuildTrackService {
       return
     }
 
-    logger.info('buildTrackService.reportBuild', { ...data, users })
+    logger.info('buildTrackService.reportBuild', { users, data })
 
     users.forEach(user =>
       sendMessage(
