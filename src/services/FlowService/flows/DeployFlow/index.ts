@@ -116,8 +116,16 @@ export class DeployFlow extends Flow {
     return triggerBuild(values).then(isOk => {
       if (isOk) {
         this.deployTrackService.subscribe(data.user.id, trackId)
+        return isOk
       }
-      return isOk
+
+      return {
+        response_action: 'errors' as 'errors',
+        errors: {
+          // Slack doesn't provide means for showing form based errors, so we use the first field
+          [deployParams[0].actionId]: `Jenkins doesn't respond`,
+        },
+      }
     })
   }
 }
