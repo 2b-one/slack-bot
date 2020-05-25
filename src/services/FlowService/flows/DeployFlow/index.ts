@@ -100,6 +100,19 @@ export class DeployFlow extends Flow {
       },
     )
 
+    let hasErrors = false
+    const errors = {} as { [key: string]: string }
+    for (const deployParam of deployParams) {
+      if (values[deployParam.name] == null) {
+        errors[deployParam.actionId] = 'required'
+        hasErrors = true
+      }
+    }
+
+    if (hasErrors) {
+      return Promise.resolve({ response_action: 'errors' as 'errors', errors })
+    }
+
     return triggerBuild(values).then(isOk => {
       if (isOk) {
         this.deployTrackService.subscribe(data.user.id, trackId)

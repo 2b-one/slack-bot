@@ -3,6 +3,7 @@ import {
   BlockSuggestionPayload,
   Command,
   CommandResponse,
+  ResponseAction,
   ViewSubmissionPayload,
 } from '../../../types/SlackAPI'
 
@@ -13,7 +14,7 @@ export abstract class Flow {
 
   continue(_data: BlockActionsPayload): void {}
 
-  submit(_data: ViewSubmissionPayload): Promise<boolean> {
+  submit(_data: ViewSubmissionPayload): Promise<boolean | ResponseAction> {
     return Promise.resolve(true)
   }
 

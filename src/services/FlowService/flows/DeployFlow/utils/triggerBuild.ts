@@ -24,7 +24,7 @@ export function triggerBuild(data: { [key: string]: any }) {
     })
     .then(() => true)
     .catch(error => {
-      logger.error('jenkins.deploy', { error })
+      logger.error('jenkins.deploy', { error: error.message })
       return false
     })
 }

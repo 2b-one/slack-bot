@@ -26,6 +26,10 @@ interactiveController.post('/interactive', async (req, res) => {
 
     case 'view_submission': {
       const result = await flowService.submit(payload)
+      if (typeof result === 'object') {
+        return res.status(200).send(result)
+      }
+
       return result
         ? // it's important to send empty body, otherwise slack will reject it
           res.status(200).send()

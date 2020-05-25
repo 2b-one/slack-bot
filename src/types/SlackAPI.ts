@@ -74,3 +74,16 @@ export type InteractivePayload =
   | BlockActionsPayload
   | ViewSubmissionPayload
   | BlockSuggestionPayload
+
+export interface ResponseActionError {
+  response_action: 'errors'
+  errors: {
+    [key: string]: string
+  }
+}
+
+interface ResponseActionClear {
+  response_action: 'clear'
+}
+
+export type ResponseAction = ResponseActionError | ResponseActionClear
