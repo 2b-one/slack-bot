@@ -1,6 +1,6 @@
 {
   "name": "slack-bot",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "main": "src/index.ts",
   "author": "Dmitrii Samsonov <dmitrii.samsonov@ataccama.com>",
   "license": "WTFPL",
