@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { BranchInfo } from '../../../../types'
 import {
   BlockActionsPayload,
   Command,
@@ -33,7 +34,7 @@ export class BuildNotificationFlow extends Flow {
 
     if (branches.length === 1) {
       this.buildTrackService.subscribe(user_id, branches[0])
-      return true
+      return getConfirmationMessage(branches)
     }
 
     return {
@@ -78,12 +79,19 @@ export class BuildNotificationFlow extends Flow {
     const tracked = []
     for (const option of selectAction.selected_options) {
       const [projectId, repositoryName, branchName] = option.value.split(' ')
-      this.buildTrackService.subscribe(user.id, { projectId, repositoryName, branchName })
-      tracked.push(`${repositoryName}/${branchName}`)
+      const branch = { projectId, repositoryName, branchName }
+      this.buildTrackService.subscribe(user.id, branch)
+      tracked.push(branch)
     }
 
-    respondToCommand(response_url, {
-      text: `command received: watching for ${tracked.map(t => `\`${t}\``).join(', ')}`,
-    })
+    respondToCommand(response_url, getConfirmationMessage(tracked))
+  }
+}
+
+function getConfirmationMessage(branches: BranchInfo[]) {
+  return {
+    text: `command received: watching for ${branches
+      .map(b => `\`${b.repositoryName}/${b.branchName}\``)
+      .join(', ')}`,
   }
 }
