@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import serializeForm from 'form-urlencoded'
-import got from 'got'
+import got, { TimeoutError } from 'got'
 import * as url from 'url'
 import { logger } from '../../../../../utils/logger'
 import { ConfigService } from '../../../../ConfigService'
@@ -15,6 +15,7 @@ export function triggerBuild(data: { [key: string]: any }) {
     .post(url.resolve(host, deployJobPath), {
       // TODO: figure out jenkins certificate
       rejectUnauthorized: false,
+      timeout: 2000,
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
       },
@@ -24,6 +25,14 @@ export function triggerBuild(data: { [key: string]: any }) {
     })
     .then(() => true)
     .catch(error => {
+      /**
+       * Jenkins sometimes responds really slow but still schedules the build,
+       * so we treat timeouted responses as successful.
+       */
+      if (error instanceof TimeoutError) {
+        return true
+      }
+
       logger.error('jenkins.deploy', { error: error.message })
       return false
     })
