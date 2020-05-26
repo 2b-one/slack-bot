@@ -1,0 +1,27 @@
+name: PR
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  quality_check:
+    name: Code quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - run: yarn
+        name: Install dependencies
+
+      - run: yarn lint
+        name: ESLint
+
+      - run: yarn format
+        name: Prettier
+
+      - run: yarn typecheck
+        name: Typescript
