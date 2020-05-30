@@ -2,4 +2,7 @@
 /logs
 
 app.config.json
+
 yarn-error.log
+
+.vscode
