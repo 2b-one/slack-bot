@@ -59,15 +59,21 @@ export interface BlockSuggestionPayload {
   value: string
 }
 
+interface View<T> {
+  id: string
+  type: string
+  hash: string
+  callback_id: string
+  blocks: any
+  state: {
+    values: T
+  }
+}
+
 export interface ViewSubmissionPayload<T extends { [key: string]: any } = { [key: string]: any }> {
   type: 'view_submission'
   user: User
-  view: {
-    callback_id: string
-    state: {
-      values: T
-    }
-  }
+  view: View<T>
 }
 
 export type InteractivePayload =
@@ -87,3 +93,23 @@ interface ResponseActionClear {
 }
 
 export type ResponseAction = ResponseActionError | ResponseActionClear
+
+interface UrlVerificationEvent {
+  type: 'url_verification'
+  token: string
+  challenge: string
+}
+
+interface EventCallback<T> {
+  type: 'event_callback'
+  event: T
+}
+
+export interface AppHomeOpenedEvent<T> {
+  type: 'app_home_opened'
+  user: string
+  tab: string
+  view?: View<T>
+}
+
+export type Event = UrlVerificationEvent | EventCallback<AppHomeOpenedEvent<any>>
