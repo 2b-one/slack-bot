@@ -3,14 +3,13 @@ import {
   BlockSuggestionPayload,
   Command,
   CommandResponse,
+  Event,
   ResponseAction,
   ViewSubmissionPayload,
 } from '../../../types/SlackAPI'
 
 export abstract class Flow {
-  protected abstract actionIds: string[]
-
-  abstract run(data: Command): CommandResponse | boolean
+  abstract readonly actionIds: string[]
 
   continue(_data: BlockActionsPayload): void {}
 
@@ -21,8 +20,16 @@ export abstract class Flow {
   suggest(_data: BlockSuggestionPayload): { text: string; value: string }[] {
     return []
   }
+}
 
-  match(actionId: string) {
-    return this.actionIds.includes(actionId)
-  }
+export abstract class CommandFlow extends Flow {
+  abstract readonly command: string
+
+  abstract run(data: Command): CommandResponse | boolean
+}
+
+export abstract class EventFlow extends Flow {
+  abstract readonly eventTypes: string[]
+
+  abstract event(data: Event): void
 }

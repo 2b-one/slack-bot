@@ -9,21 +9,18 @@ import {
 } from '../../../../types/SlackAPI'
 import { inject } from '../../../../utils/inject'
 import { DeployTrackService } from '../../../DeployTrackService'
-import { ProjectService } from '../../../ProjectService'
-import { Flow } from '../Flow'
+import { CommandFlow } from '../Flow'
 import { DeployFlowAction } from './DeployFlowAction'
 import { BranchDeployParam, deployParams } from './DeployParam'
 import { openView } from './utils/openView'
 import { triggerBuild } from './utils/triggerBuild'
 
-export class DeployFlow extends Flow {
-  @inject
-  private projectService!: ProjectService
-
+export class DeployFlow extends CommandFlow {
   @inject
   private deployTrackService!: DeployTrackService
 
-  protected actionIds = [DeployFlowAction.Modal, ...deployParams.map(p => p.actionId)]
+  readonly actionIds = [DeployFlowAction.Modal, ...deployParams.map(p => p.actionId)]
+  readonly command = '/2b-deployed'
 
   run(data: Command): CommandResponse | boolean {
     openView(

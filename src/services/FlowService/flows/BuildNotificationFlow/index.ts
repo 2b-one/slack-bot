@@ -9,21 +9,22 @@ import {
 import { inject } from '../../../../utils/inject'
 import { BuildTrackService } from '../../../BuildTrackService'
 import { ProjectService } from '../../../ProjectService'
-import { Flow } from '../Flow'
+import { CommandFlow } from '../Flow'
 import { respondToCommand } from './respondToCommand'
 
 enum SubscribeFlowAction {
   Track = 'subscribe-flow-track',
 }
 
-export class BuildNotificationFlow extends Flow {
+export class BuildNotificationFlow extends CommandFlow {
   @inject
   private buildTrackService!: BuildTrackService
 
   @inject
   private projectService!: ProjectService
 
-  protected actionIds = [SubscribeFlowAction.Track]
+  readonly actionIds = [SubscribeFlowAction.Track]
+  readonly command = '/2b-notified'
 
   run(data: Command): CommandResponse | boolean {
     const { user_id, text: branchName } = data

@@ -4,7 +4,6 @@ import { BuildTrackService } from './services/BuildTrackService'
 import { ConfigService } from './services/ConfigService'
 import { DeployTrackService } from './services/DeployTrackService'
 import { FlowService } from './services/FlowService'
-import { HomeService } from './services/HomeService'
 import { ProjectService } from './services/ProjectService'
 import { serviceContainer } from './services/ServiceContainer'
 import { logger } from './utils/logger'
@@ -22,7 +21,6 @@ async function start() {
     serviceContainer.register('buildTrackService', new BuildTrackService())
     serviceContainer.register('deployTrackService', new DeployTrackService())
     serviceContainer.register('flowService', new FlowService())
-    serviceContainer.register('homeService', new HomeService())
 
     const server = new Server(configService.data.server.port)
     server.start()

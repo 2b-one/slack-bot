@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { HomeService } from '../../services/HomeService'
+import { FlowService } from '../../services/FlowService'
 import { serviceContainer } from '../../services/ServiceContainer'
-import { Event } from '../../types/SlackAPI'
+import { EventRequestBody } from '../../types/SlackAPI'
 
 const eventsController = Router()
 
-eventsController.post<never, any, Event>('/events', async (req, res) => {
+eventsController.post<never, any, EventRequestBody>('/events', async (req, res) => {
   const payload = req.body
   switch (payload.type) {
     case 'url_verification':
@@ -14,7 +14,7 @@ eventsController.post<never, any, Event>('/events', async (req, res) => {
     case 'event_callback': {
       const { event } = payload
       if (event.type === 'app_home_opened') {
-        serviceContainer.get(HomeService).handle(event)
+        serviceContainer.get(FlowService).event(event)
       }
       return res.sendStatus(200)
     }
