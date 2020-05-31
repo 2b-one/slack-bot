@@ -28,6 +28,7 @@ const buildInfoTuples = [
   ['bitbucketRepo', 'string'],
   ['branchName', 'string'],
   ['buildUrl', 'string'],
+  ['buildInfoUrl', 'string'],
   ['success', 'boolean'],
 ]
 function isBuildInfo(data: { [key: string]: any }): data is BuildInfo {

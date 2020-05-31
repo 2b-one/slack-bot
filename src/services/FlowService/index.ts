@@ -16,7 +16,7 @@ export class FlowService {
     ) as CommandFlow
 
     if (!flow) {
-      return { text: `command "${data.command}" not found` }
+      return { text: `Command "${data.command}" not found` }
     }
 
     const response = flow.run(data)
@@ -24,7 +24,7 @@ export class FlowService {
       return response
     }
 
-    return response ? { text: 'command received' } : { text: 'command failed' }
+    return response ? { text: 'Command received' } : { text: 'Command failed' }
   }
 
   event(data: Event) {

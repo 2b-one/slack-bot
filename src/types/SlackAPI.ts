@@ -46,6 +46,10 @@ export interface ButtonAction {
   value?: string
 }
 
+export function isButtonAction(action: any): action is ButtonAction {
+  return action?.type === 'button' && action?.action_id != null
+}
+
 interface User {
   id: string
   username: string
@@ -53,15 +57,20 @@ interface User {
   team_id: string
 }
 
-export interface BlockActionsPayload<
-  TActions extends Array<unknown> = unknown[],
-  TView extends any = any
-> {
+interface Message {
+  type: 'message'
+  text: string
+  user: string
+  blocks: any[]
+}
+
+export interface BlockActionsPayload<TActions extends Array<unknown> = unknown[], TView = any> {
   type: 'block_actions'
   user: User
   response_url: string
   actions: TActions
   view?: View<TView>
+  message?: Message
 }
 
 export interface BlockSuggestionPayload {
@@ -72,11 +81,11 @@ export interface BlockSuggestionPayload {
 }
 
 interface View<T> {
+  type: 'home' | 'modal'
   id: string
-  type: string
   hash: string
   callback_id: string
-  blocks: any
+  blocks: any[]
   state: {
     values: T
   }

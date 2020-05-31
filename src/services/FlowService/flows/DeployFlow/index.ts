@@ -8,12 +8,12 @@ import {
   ViewSubmissionPayload,
 } from '../../../../types/SlackAPI'
 import { inject } from '../../../../utils/inject'
+import { triggerBuild } from '../../../../utils/triggerBuild'
 import { DeployTrackService } from '../../../DeployTrackService'
 import { CommandFlow } from '../Flow'
 import { DeployFlowAction } from './DeployFlowAction'
 import { BranchDeployParam, deployParams } from './DeployParam'
 import { openView } from './utils/openView'
-import { triggerBuild } from './utils/triggerBuild'
 
 export class DeployFlow extends CommandFlow {
   @inject
