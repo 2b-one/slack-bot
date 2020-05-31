@@ -1,41 +1,41 @@
 import { BranchInfo, BuildInfo } from '../../types'
 import { logger } from '../../utils/logger'
-import { sendMessage } from '../../utils/sendMessage'
+
+type Callback = (userId: string, data: BuildInfo, unsubscribe: () => void) => void
+
+interface Subscription {
+  userId: string
+  callback: Callback
+}
 
 export class BuildTrackService {
-  private subscriptions: { [key: string]: string[] } = {}
+  private subscriptions: { [key: string]: Subscription[] } = {}
 
-  subscribe(userId: string, branch: BranchInfo) {
+  subscribe(userId: string, branch: BranchInfo, callback: Callback) {
     const key = serializeBranch(branch)
     if (!this.subscriptions[key]) {
       this.subscriptions[key] = []
     }
 
     const subs = this.subscriptions[key]
-    if (subs.every(user => user !== userId)) {
-      subs.push(userId)
-
+    if (subs.every(sub => sub.userId !== userId)) {
+      subs.push({ userId, callback })
       logger.info('buildTrackService.subscribe', { userId, branch })
     }
   }
 
   unsubscribe(userId: string, branch: BranchInfo) {
     const key = serializeBranch(branch)
-    const userIds = this.subscriptions[key]
-    if (userIds?.length === 0) {
-      return
-    }
-
-    const userIndex = userIds.indexOf(userId)
-    if (userIndex !== -1) {
-      userIds.splice(userIndex, 1)
+    const success = this._unsubscribe(userId, key)
+    if (success) {
+      logger.info('buildTrackService.unsubscribe', { userId, branch })
     }
   }
 
   getSubscriptions(userId: string): BranchInfo[] {
     const subscriptions = []
-    for (const [serializedBranch, userIds] of Object.entries(this.subscriptions)) {
-      if (userIds.includes(userId)) {
+    for (const [serializedBranch, subs] of Object.entries(this.subscriptions)) {
+      if (subs.some(sub => sub.userId === userId)) {
         const branch = parseBranch(serializedBranch)
         if (branch) {
           subscriptions.push(branch)
@@ -53,25 +53,31 @@ export class BuildTrackService {
       branchName: data.branchName,
     }
     const key = serializeBranch(branch)
-    const users = this.subscriptions[key] ?? []
-    if (users.length === 0) {
+    const subs = this.subscriptions[key] ?? []
+    if (subs.length === 0) {
       return
     }
 
-    logger.info('buildTrackService.reportBuild', { users, data })
+    logger.info('buildTrackService.reportBuild', { users: subs.map(sub => sub.userId), data })
+    for (const sub of subs) {
+      sub.callback(sub.userId, data, () => this._unsubscribe(sub.userId, key))
+      this._unsubscribe(sub.userId, key)
+    }
+  }
 
-    users.forEach(user =>
-      sendMessage(
-        user,
-        `*${data.bitbucketRepo}:${data.branchName}* has ${
-          data.success ? 'been built' : 'failed'
-        }. See details <${data.buildUrl}|here>.`,
-      ).then(isOk => {
-        if (isOk && data.success) {
-          this.unsubscribe(user, branch)
-        }
-      }),
-    )
+  private _unsubscribe(userId: string, key: string) {
+    const subs = this.subscriptions[key]
+    if (!subs?.length) {
+      return false
+    }
+
+    const subIndex = subs.findIndex(sub => sub.userId === userId)
+    if (subIndex === -1) {
+      return false
+    }
+
+    subs.splice(subIndex, 1)
+    return true
   }
 }
 

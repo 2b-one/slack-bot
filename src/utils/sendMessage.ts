@@ -3,7 +3,7 @@ import { ConfigService } from '../services/ConfigService'
 import { serviceContainer } from '../services/ServiceContainer'
 import { logger } from './logger'
 
-export function sendMessage(userId: string, text: string) {
+export function sendMessage(userId: string, text: string, blocks?: any) {
   const token = serviceContainer.get(ConfigService).data.slack.appToken
 
   return Slack.conversations
@@ -15,7 +15,7 @@ export function sendMessage(userId: string, text: string) {
 
       throw new Error(result.error)
     })
-    .then(channel => Slack.chat.postMessage({ token, channel, text }))
+    .then(channel => Slack.chat.postMessage({ token, channel, text, blocks }))
     .then(result => result.ok)
     .catch(error => {
       logger.error('slack.sendMessage', { error: error.message, userId })

@@ -2,9 +2,9 @@
 import serializeForm from 'form-urlencoded'
 import got, { TimeoutError } from 'got'
 import * as url from 'url'
-import { logger } from '../../../../../utils/logger'
-import { ConfigService } from '../../../../ConfigService'
-import { serviceContainer } from '../../../../ServiceContainer'
+import { ConfigService } from '../services/ConfigService'
+import { serviceContainer } from '../services/ServiceContainer'
+import { logger } from './logger'
 
 export function triggerBuild(data: { [key: string]: any }) {
   const { host, deployJobPath, username, password } = serviceContainer.get(

@@ -11,6 +11,7 @@ export interface BuildInfo {
   branchName: string
   success: boolean
   buildUrl: string
+  buildInfoUrl: string
 }
 
 interface BaseDeployInfo {
