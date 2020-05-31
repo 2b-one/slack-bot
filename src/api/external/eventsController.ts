@@ -12,10 +12,7 @@ eventsController.post<never, any, EventRequestBody>('/events', async (req, res) 
       return res.status(200).send(payload.challenge)
 
     case 'event_callback': {
-      const { event } = payload
-      if (event.type === 'app_home_opened') {
-        serviceContainer.get(FlowService).event(event)
-      }
+      serviceContainer.get(FlowService).event(payload.event)
       return res.sendStatus(200)
     }
 
