@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import got from 'got'
-import { serviceContainer } from '../ServiceContainer'
-import { ConfigService } from '../ConfigService'
-import { logger } from '../../utils/logger'
+import { logger } from '../../../../utils/logger'
+import { ConfigService } from '../../../ConfigService'
+import { serviceContainer } from '../../../ServiceContainer'
 
 export function publishView(view: any, userId: string, hash?: string) {
   const token = serviceContainer.get(ConfigService).data.slack.appToken

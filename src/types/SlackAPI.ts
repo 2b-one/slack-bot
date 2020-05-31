@@ -22,6 +22,7 @@ export interface MultiStaticSelectAction {
   type: 'multi_static_select'
   block_id: string
   action_id: string
+  action_ts: string
   selected_options: Array<{
     value: string
     text: {
@@ -35,7 +36,14 @@ export interface MultiStaticSelectAction {
     text: string
     emoji: boolean
   }
+}
+
+export interface ButtonAction {
+  type: 'button'
+  block_id: string
+  action_id: string
   action_ts: string
+  value?: string
 }
 
 interface User {
@@ -45,11 +53,15 @@ interface User {
   team_id: string
 }
 
-export interface BlockActionsPayload<T extends Array<unknown> = unknown[]> {
+export interface BlockActionsPayload<
+  TActions extends Array<unknown> = unknown[],
+  TView extends any = any
+> {
   type: 'block_actions'
   user: User
   response_url: string
-  actions: T
+  actions: TActions
+  view?: View<TView>
 }
 
 export interface BlockSuggestionPayload {
@@ -112,4 +124,5 @@ export interface AppHomeOpenedEvent<T> {
   view?: View<T>
 }
 
-export type Event = UrlVerificationEvent | EventCallback<AppHomeOpenedEvent<any>>
+export type Event = AppHomeOpenedEvent<any>
+export type EventRequestBody = UrlVerificationEvent | EventCallback<Event>

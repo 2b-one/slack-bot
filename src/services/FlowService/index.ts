@@ -4,15 +4,17 @@ import {
   BlockSuggestionPayload,
   Command,
   CommandResponse,
+  Event,
   ViewSubmissionPayload,
 } from '../../types/SlackAPI'
-import { flows } from './flows'
-
-const flowInstances = Object.values(flows)
+import { CommandFlow, EventFlow, flows } from './flows'
 
 export class FlowService {
   run(data: Command): CommandResponse {
-    const flow = flows[data.command]
+    const flow: CommandFlow | undefined = flows.find(
+      flowInstance => flowInstance instanceof CommandFlow && flowInstance.command === data.command,
+    ) as CommandFlow
+
     if (!flow) {
       return { text: `command "${data.command}" not found` }
     }
@@ -25,9 +27,21 @@ export class FlowService {
     return response ? { text: 'command received' } : { text: 'command failed' }
   }
 
+  event(data: Event) {
+    const flow = flows.find(
+      flowInstance =>
+        flowInstance instanceof EventFlow && flowInstance.eventTypes.includes(data.type),
+    ) as EventFlow
+    if (!flow) {
+      return
+    }
+
+    flow.event(data)
+  }
+
   continue(data: BlockActionsPayload<any[]>) {
     const actionId = data.actions[0]?.action_id
-    const flow = flowInstances.find(flowInstance => flowInstance.match(actionId))
+    const flow = flows.find(flowInstance => flowInstance.actionIds.includes(actionId))
     if (!flow) {
       return
     }
@@ -36,7 +50,8 @@ export class FlowService {
   }
 
   submit(data: ViewSubmissionPayload) {
-    const flow = flowInstances.find(flowInstance => flowInstance.match(data.view.callback_id))
+    const actionId = data.view.callback_id
+    const flow = flows.find(flowInstance => flowInstance.actionIds.includes(actionId))
     if (!flow) {
       return
     }
@@ -46,7 +61,7 @@ export class FlowService {
 
   suggest(data: BlockSuggestionPayload) {
     const actionId = data.action_id
-    const flow = flowInstances.find(flowInstance => flowInstance.match(actionId))
+    const flow = flows.find(flowInstance => flowInstance.actionIds.includes(actionId))
     return flow ? flow.suggest(data) : []
   }
 }
