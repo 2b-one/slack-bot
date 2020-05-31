@@ -61,7 +61,6 @@ export class BuildTrackService {
     logger.info('buildTrackService.reportBuild', { users: subs.map(sub => sub.userId), data })
     for (const sub of subs) {
       sub.callback(sub.userId, data, () => this._unsubscribe(sub.userId, key))
-      this._unsubscribe(sub.userId, key)
     }
   }
 
