@@ -94,6 +94,8 @@ export class DeployFlow extends CommandFlow {
         MMM_ORACLE: false,
         // artificial parameter to track on build completion
         TRACK_ID: trackId,
+        // artificial parameter to show deployment author
+        AUTHOR: `@${data.user.username}`,
       },
     )
 
