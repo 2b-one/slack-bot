@@ -86,7 +86,6 @@ export class DeployFlow extends CommandFlow {
         NOMAD_DC: 'dev1',
         DPM_APP_IMAGE: 'dev',
         DPE_APP_IMAGE: 'dev',
-        AICORE_APP_IMAGE: 'latest',
         RDM_MDM_APP_IMAGE: '0.1.10',
         DEPLOY_GROUPS: 'MMM,FE,DP,AI',
         MMM_DROP_FIRST: true,

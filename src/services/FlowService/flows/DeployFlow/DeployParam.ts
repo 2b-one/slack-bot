@@ -49,10 +49,18 @@ export class BranchDeployParam implements DeployParam<string> {
 }
 
 class InputDeployParam implements DeployParam<string> {
-  constructor(public name: string, public actionId: DeployFlowParamAction) {}
+  constructor(
+    public name: string,
+    public actionId: DeployFlowParamAction,
+    public options: {
+      placeholder?: string
+      hint?: string
+      initialValue?: string
+    },
+  ) {}
 
   getBlock() {
-    return getTextInput(this.name, this.actionId)
+    return getTextInput(this.name, this.actionId, this.options)
   }
 
   parse(data: any) {
@@ -61,7 +69,10 @@ class InputDeployParam implements DeployParam<string> {
 }
 
 export const deployParams = [
-  new InputDeployParam('NOMAD_ID', DeployFlowAction.SelectNomadId),
+  new InputDeployParam('NOMAD_ID', DeployFlowAction.SelectNomadId, {
+    placeholder: 'environment name',
+    hint: 'https://NOMAD_ID.dev1.atc/',
+  }),
   new BranchDeployParam('FE_APP_IMAGE', DeployFlowAction.SelectFE, {
     projectId: 'MDD',
     repositoryName: 'one-metadata-frontend',
@@ -69,5 +80,10 @@ export const deployParams = [
   new BranchDeployParam('BE_APP_IMAGE', DeployFlowAction.SelectBE, {
     projectId: 'MDD',
     repositoryName: 'one-metadata-server',
+  }),
+  new InputDeployParam('AICORE_APP_IMAGE', DeployFlowAction.SelectAI, {
+    placeholder: 'AI image tag',
+    hint: 'Use "latest" if you deleted the value by accident',
+    initialValue: 'latest',
   }),
 ]

@@ -20,7 +20,7 @@ export function getSelectBox(paramName: string, actionId: string, defaultValue: 
       },
       placeholder: {
         type: 'plain_text',
-        text: 'Select an item',
+        text: 'Select a branch',
         emoji: true,
       },
     },
