@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import url from 'url'
 import { BranchInfo, BuildInfo } from '../../../../types'
 import {
   BlockActionsPayload,
@@ -152,13 +153,14 @@ export class BuildNotificationFlow extends CommandFlow {
     ]
 
     if (!data.success) {
+      const buildInfoUrl = url.resolve(data.buildUrl, '/api/json?pretty=true')
       blocks.push({
         type: 'actions',
         elements: [
           {
             type: 'button',
             action_id: BuildNotificationFlowAction.Rebuild,
-            value: data.buildInfoUrl,
+            value: buildInfoUrl,
             style: 'danger',
             text: {
               type: 'plain_text',
