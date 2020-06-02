@@ -33,7 +33,7 @@ export class BuildNotificationFlow extends CommandFlow {
     const { user_id, text: branchName } = data
     const branches = this.projectService.findBranch(branchName)
     if (branches.length === 0) {
-      return { text: `command failed: incorrect branch` }
+      return { text: `Command failed: incorrect branch` }
     }
 
     if (branches.length === 1) {
