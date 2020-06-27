@@ -3,7 +3,7 @@ import { ConfigService } from '../services/ConfigService'
 import { serviceContainer } from '../services/ServiceContainer'
 import { logger } from './logger'
 
-export function sendMessage(userId: string, text: string, blocks?: any) {
+export function sendMessage(userId: string, text: string, blocks: any = []) {
   const token = serviceContainer.get(ConfigService).data.slack.appToken
 
   return Slack.conversations
