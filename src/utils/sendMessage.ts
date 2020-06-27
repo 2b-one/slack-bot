@@ -18,6 +18,6 @@ export function sendMessage(userId: string, text: string, blocks?: any) {
     .then(channel => Slack.chat.postMessage({ token, channel, text, blocks }))
     .then(result => result.ok)
     .catch(error => {
-      logger.error('slack.sendMessage', { error: error.message, userId })
+      logger.error('slack.sendMessage', { error: error.message, userId, text, blocks })
     })
 }
