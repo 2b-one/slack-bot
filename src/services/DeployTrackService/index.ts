@@ -31,8 +31,8 @@ export class DeployTrackService {
     logger.info('deployTrackService.reportDeploy', { userId, data })
 
     const message = data.success
-      ? `deployment is finished: <${data.envUrl}|${data.envUrl}>`
-      : `deployment has failed, see details <${data.buildUrl}|here>.`
+      ? `Deployment is finished: <${data.envUrl}|${data.envUrl}>`
+      : `Deployment has failed, see details <${data.buildUrl}|here>.`
 
     sendMessage(userId, message).then(() => {
       this.subscriptions[userId] = trackIds.filter(id => id !== data.trackId)
