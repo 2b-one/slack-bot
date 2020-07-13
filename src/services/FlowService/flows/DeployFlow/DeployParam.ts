@@ -23,7 +23,7 @@ export class BranchDeployParam implements DeployParam<string> {
   ) {}
 
   getBlock() {
-    return getSelectBox(this.name, this.actionId, 'dev')
+    return getSelectBox(this.name, this.actionId, 'master')
   }
 
   getBranches() {
