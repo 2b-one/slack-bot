@@ -1,6 +1,6 @@
 {
   "name": "slack-bot",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "main": "src/index.ts",
   "author": "Dmitrii Samsonov <dmitrii.samsonov@ataccama.com>",
   "license": "WTFPL",
@@ -9,7 +9,8 @@
     "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier \"src/**/*.{ts,json}\" \"*.{js,json}\" --list-different",
     "format:fix": "yarn format --write",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postversion": "yarn config set version-git-message \"chore: bump version to %s\" && git push --tags"
   },
   "dependencies": {
     "@types/express": "^4.17.6",
